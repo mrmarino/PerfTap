@@ -23,7 +23,7 @@ namespace PerfTap
         private readonly ICounterSamplingConfiguration _counterSamplingConfig;
         private readonly List<CounterName> _counterPaths;
         private readonly CounterNameConfigurationCollection _counterDefinitions;
-
+        private readonly List<CounterFilter> _counterFilters;
         /// <summary>
         /// Initializes a new instance of the MonitoringTaskFactory class.
         /// </summary>
@@ -33,6 +33,8 @@ namespace PerfTap
             if (null == counterSamplingConfig) { throw new ArgumentNullException("counterSamplingConfig"); }
 
             _counterSamplingConfig = counterSamplingConfig;
+            
+            _counterFilters = counterSamplingConfig.Filters.Select(x => new CounterFilter { Expression = x.Expression}).ToList();
             _counterPaths = counterSamplingConfig.DefinitionFilePaths
                 .SelectMany(path => CounterFileParser.ReadCountersFromFile(path.Path)).Select(item => new CounterName
                 {
@@ -53,7 +55,13 @@ namespace PerfTap
                     {
                         foreach (PerformanceCounterSample metric in samples.CounterSamples)
                         {
-                            client.Send(metric.MetricPath, metric.MetricValue, metric.Timestamp);
+                            foreach (CounterFilter filter in _counterFilters)
+                            {
+                                if (!metric.IsFiltered(_counterFilters))
+                                {
+                                    client.Send(metric.MetricPath, metric.MetricValue, metric.Timestamp);
+                                }
+                            }
                         }
                     }
                 }

@@ -96,15 +96,6 @@ namespace PerfTap.Counter
                     new CounterName { Name = @"@\network interface(*)\bytes total/sec", MetricSuffix = "net.{0}.bytes_total_sec"},
                     new CounterName { Name = @"\processor(_total)\% processor time", MetricSuffix = "cpu.processor_time"},
                     };
-
-                    //new List<string>() { 
-                    //    @"\network interface(*)\bytes total/sec|net.{0}.bytes_total_sec", 
-                    //    @"\processor(_total)\% processor time|cpu.processor_time", 
-                    //    @"\memory\% committed bytes in use|memory.%_comitted", 
-                    //    @"\memory\cache faults/sec|memory.cache_faults_sec", 
-                    //    @"\physicaldisk(_total)\% disk time|disk.%_time", 
-                    //    @"\physicaldisk(_total)\current disk queue length|disk.current_queue" 
-                    //});
 			}
 		}
 

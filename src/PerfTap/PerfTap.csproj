@@ -50,11 +50,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\CounterFilter.cs" />
+    <Compile Include="Configuration\CounterFilterConfigurationCollection.cs" />
     <Compile Include="Configuration\CounterSamplingConfiguration.cs" />
     <Compile Include="Configuration\CounterDefinitionsFilePath.cs" />
     <Compile Include="Configuration\CounterDefinitionsFilePathConfigurationCollection.cs" />
     <Compile Include="Configuration\CounterName.cs" />
     <Compile Include="Configuration\CounterNameConfigurationCollection.cs" />
+    <Compile Include="Configuration\ICounterFilter.cs" />
     <Compile Include="Configuration\ICounterSamplingConfiguration.cs" />
     <Compile Include="Configuration\ICounterDefinitionsFilePath.cs" />
     <Compile Include="Configuration\ICounterName.cs" />

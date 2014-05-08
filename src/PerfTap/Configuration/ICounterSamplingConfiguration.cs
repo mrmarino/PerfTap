@@ -8,7 +8,8 @@ namespace PerfTap.Configuration
 	public interface ICounterSamplingConfiguration
 	{
 		ReadOnlyCollection<ICounterDefinitionsFilePath> DefinitionFilePaths { get; }
-		ReadOnlyCollection<ICounterName> CounterNames { get; } 
+		ReadOnlyCollection<ICounterName> CounterNames { get; }
+        ReadOnlyCollection<ICounterFilter> Filters { get; } 
 		TimeSpan SampleInterval { get; }
         string MetricHost { get;}
         int MetricHostPort { get; }

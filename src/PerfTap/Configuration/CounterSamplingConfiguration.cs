@@ -70,12 +70,25 @@ namespace PerfTap.Configuration
 		{
 			get { return (CounterNameConfigurationCollection)this["counterNames"]; }
 			set { this["counterNames"] = value; }
-		}
+		}        
 
 		ReadOnlyCollection<ICounterName> ICounterSamplingConfiguration.CounterNames
 		{
 			get { return new ReadOnlyCollection<ICounterName>(CounterDefinitions.OfType<ICounterName>().ToList() ?? (IList<ICounterName>)new ICounterName[0]); }
 		}
+
+        [ConfigurationProperty("filters", IsDefaultCollection = true, IsRequired = false)]
+        [ConfigurationCollection(typeof(CounterFilterConfigurationCollection), AddItemName = "filter")]
+        public CounterFilterConfigurationCollection Filters
+        {
+            get { return (CounterFilterConfigurationCollection)this["filters"]; }
+            set { this["filters"] = value; }
+        }
+
+        ReadOnlyCollection<ICounterFilter> ICounterSamplingConfiguration.Filters
+        {
+            get { return new ReadOnlyCollection<ICounterFilter>(Filters.OfType<ICounterFilter>().ToList() ?? (IList<ICounterFilter>)new ICounterFilter[0]); }
+        }
 
 		//TODO: 1-9-2012 -- add error handling to ensure that there's always at least a set of definition paths OR counter definitions supplied by the user
 	}

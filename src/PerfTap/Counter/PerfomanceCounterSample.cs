@@ -6,10 +6,11 @@
 
 namespace PerfTap.Counter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
+    using PerfTap.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
     public class PerformanceCounterSample
     {
@@ -58,6 +59,15 @@ namespace PerfTap.Counter
         {
             get
             { return Convert.ToUInt64(CookedValue); }
+        }
+
+        public bool IsFiltered(List<CounterFilter> filters) {
+            foreach (CounterFilter filter in filters)
+            {
+                if (MetricPath.Contains(filter.Expression)) return true;
+            }
+
+            return false;
         }
     }
 }
