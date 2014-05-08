@@ -29,7 +29,7 @@
 				// It will kick off the service start point, but never kill it.
 				// Shut down the debugger to exit
 				//TODO: this factory needs to be registered in a container to make this more general purpose 
-				using (var service = new TaskService(cancellation => new MonitoringTaskFactory(CounterSamplingConfiguration.FromConfig(), MetricPublishingConfiguration.FromConfig()).CreateContinuousTask(cancellation)))
+				using (var service = new TaskService(cancellation => new MonitoringTaskFactory(CounterSamplingConfiguration.FromConfig()).CreateContinuousTask(cancellation)))
 				{
 					// Put a breakpoint in OnStart to catch it
 					typeof(CustomServiceBase).GetMethod("OnStart", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(service, new object[] { null });

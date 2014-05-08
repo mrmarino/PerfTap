@@ -1,25 +1,17 @@
-#http://msdn.microsoft.com/en-us/library/fxk122b4.aspx
+\asp.net applications(*)\Anonymous Requests/Sec|asp.{0}.anonymous_requests_sec
+\asp.net applications(*)\requests failed|asp.{0}.requests_failed
+\asp.net applications(*)\requests executing||asp.{0}.requests_executing
+\asp.net applications(*)\requests/sec|asp.{0}.requests_sec
+\asp.net applications(*)\errors during execution|asp.{0}.errors_during_execution
+\asp.net applications(*)\errors unhandled during execution/sec|asp.{0}.errors_unhandled_execution_sec
+\asp.net applications(*)\errors total/sec|asp.{0}.errors_total_sec
+\asp.net applications(*)\pipeline instance count|asp.{0}.pipeline_instance_count
+\asp.net applications(*)\session sql server connections total|asp.{0}.session_sql_connections_total
 
-#\asp.net applications(__total__)\requests failed
-\asp.net applications(*)\requests failed
-#\asp.net applications(__total__)\requests/sec
-\asp.net applications(*)\requests/sec
-#\asp.net applications(__total__)\errors during execution
-\asp.net applications(*)\errors during execution
-#\asp.net applications(__total__)\errors unhandled during execution/sec
-\asp.net applications(*)\errors unhandled during execution/sec
-#\asp.net applications(__total__)\errors total/sec
-\asp.net applications(*)\errors total/sec
-#\asp.net applications(__total__)\pipeline instance count
-\asp.net applications(*)\pipeline instance count
-#\asp.net applications(__total__)\sessions active
-\asp.net applications(*)\sessions active
-#\asp.net applications(__total__)\session sql server connections total
-\asp.net applications(*)\session sql server connections total
-\asp.net\applications running
-\asp.net\application restarts
-\asp.net\requests current
-\asp.net\requests queued
-\asp.net\requests rejected
-\asp.net\Worker Processes Running
-\asp.net\worker process restarts
+\asp.net\applications running|asp.applications_running
+\asp.net\application restarts|asp.application_restarts
+\asp.net\requests current|asp.requests_current
+\asp.net\requests queued|asp.requests_queued
+\asp.net\requests rejected|asp.requests_rejected
+\asp.net\Worker Processes Running|asp.worker_running
+\asp.net\worker process restarts|asp.worker_restarts

@@ -11,6 +11,7 @@ namespace PerfTap.Counter
 	using System.Linq;
 	using System.Threading;
 	using PerfTap.Interop;
+    using PerfTap.Configuration;
 
 	public class PerfmonCounterReader
 	{		
@@ -36,21 +37,22 @@ namespace PerfTap.Counter
 			this._ignoreBadStatusCodes = ignoreBadStatusCodes;
 		}
 
-		public IEnumerable<PerformanceCounterSampleSet> GetCounterSamples(TimeSpan sampleInterval, int count, CancellationToken token)
-		{
-			if (count <= 0) { throw new ArgumentOutOfRangeException("count", "must be greater than zero"); }
-			if (null == token) { throw new ArgumentNullException("token"); }
- 
-			return ProcessGetCounter(GetDefaultCounters(), sampleInterval, count, token);	
-		}
-		public IEnumerable<PerformanceCounterSampleSet> StreamCounterSamples(TimeSpan sampleInterval, CancellationToken token)
-		{
-			if (null == token) { throw new ArgumentNullException("token"); }
+        public IEnumerable<PerformanceCounterSampleSet> GetCounterSamples(TimeSpan sampleInterval, int count, CancellationToken token)
+        {
+            if (count <= 0) { throw new ArgumentOutOfRangeException("count", "must be greater than zero"); }
+            if (null == token) { throw new ArgumentNullException("token"); }
 
-			return ProcessGetCounter(GetDefaultCounters(), sampleInterval, INFINITIY, token);
-		}
+            return ProcessGetCounter(GetDefaultCounters(), sampleInterval, count, token);
+        }
 
-		public IEnumerable<PerformanceCounterSampleSet> GetCounterSamples(IEnumerable<string> counters, TimeSpan sampleInterval, int count, CancellationToken token)
+        public IEnumerable<PerformanceCounterSampleSet> StreamCounterSamples(TimeSpan sampleInterval, CancellationToken token)
+        {
+            if (null == token) { throw new ArgumentNullException("token"); }
+
+            return ProcessGetCounter(GetDefaultCounters(), sampleInterval, INFINITIY, token);
+        }
+
+        public IEnumerable<PerformanceCounterSampleSet> GetCounterSamples(List<CounterName> counters, TimeSpan sampleInterval, int count, CancellationToken token)
 		{
 			if (null == counters) { throw new ArgumentNullException("counters"); }
 			if (count <= 0) { throw new ArgumentOutOfRangeException("count", "must be greater than zero"); }
@@ -59,7 +61,7 @@ namespace PerfTap.Counter
 			return ProcessGetCounter(counters, sampleInterval, count, token);
 		}
 
-		public IEnumerable<PerformanceCounterSampleSet> StreamCounterSamples(IEnumerable<string> counters, TimeSpan sampleInterval, CancellationToken token)
+        public IEnumerable<PerformanceCounterSampleSet> StreamCounterSamples(List<CounterName> counters, TimeSpan sampleInterval, CancellationToken token)
 		{
 			if (null == counters) { throw new ArgumentNullException("counters"); }
 			if (null == token) { throw new ArgumentNullException("token"); }
@@ -67,9 +69,9 @@ namespace PerfTap.Counter
 			return ProcessGetCounter(counters, sampleInterval, INFINITIY, token);
 		}
 
-		private IEnumerable<PerformanceCounterSampleSet> ProcessGetCounter(IEnumerable<string> counters, TimeSpan sampleInterval, int maxSamples, CancellationToken token)
+        private IEnumerable<PerformanceCounterSampleSet> ProcessGetCounter(List<CounterName> counters, TimeSpan sampleInterval, int maxSamples, CancellationToken token)
 		{
-			using (PdhHelper helper = new PdhHelper(this._computerNames, counters, this._ignoreBadStatusCodes))
+			using (PdhHelper helper = new PdhHelper(counters, this._ignoreBadStatusCodes))
 			{
 				int samplesRead = 0;
 
@@ -86,25 +88,29 @@ namespace PerfTap.Counter
 			}
 		}
 
-		public static List<string> DefaultCounters
+        public static List<CounterName> DefaultCounters
 		{
 			get 
 			{ 
-				return new List<string>() { @"\network interface(*)\bytes total/sec", 
-@"\processor(_total)\% processor time", 
-@"\memory\% committed bytes in use", 
-@"\memory\cache faults/sec", 
-@"\physicaldisk(_total)\% disk time", 
-@"\physicaldisk(_total)\current disk queue length" };
+				return new List<CounterName> {
+                    new CounterName { Name = @"@\network interface(*)\bytes total/sec", MetricSuffix = "net.{0}.bytes_total_sec"},
+                    new CounterName { Name = @"\processor(_total)\% processor time", MetricSuffix = "cpu.processor_time"},
+                    };
+
+                    //new List<string>() { 
+                    //    @"\network interface(*)\bytes total/sec|net.{0}.bytes_total_sec", 
+                    //    @"\processor(_total)\% processor time|cpu.processor_time", 
+                    //    @"\memory\% committed bytes in use|memory.%_comitted", 
+                    //    @"\memory\cache faults/sec|memory.cache_faults_sec", 
+                    //    @"\physicaldisk(_total)\% disk time|disk.%_time", 
+                    //    @"\physicaldisk(_total)\current disk queue length|disk.current_queue" 
+                    //});
 			}
 		}
 
-		private IEnumerable<string> GetDefaultCounters()
-		{
-			return DefaultCounters.Select(path =>
-			{
-				return PdhHelper.TranslateLocalCounterPath(path);
-			});
-		}
+        private List<CounterName> GetDefaultCounters()
+        {
+            return DefaultCounters;
+        }
 	}
 }

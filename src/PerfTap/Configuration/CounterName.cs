@@ -11,5 +11,12 @@ namespace PerfTap.Configuration
 			get { return (string)this["name"]; }
 			set { this["name"] = value; }
 		}
+
+        [ConfigurationProperty("metricSuffix", IsRequired = true)]
+        public string MetricSuffix
+        {
+            get { return (string)this["metricSuffix"]; }
+            set { this["metricSuffix"] = value; }
+        }
 	}
 }

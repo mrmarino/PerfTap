@@ -6,10 +6,11 @@
 
 namespace PerfTap
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
+	using PerfTap.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 
 	/// <summary>
@@ -25,12 +26,17 @@ using System.Reflection;
 				: File.Exists(path) ? path
 				: Path.Combine(relativePathRoot, path);
 
-			return File.ReadAllLines(filePath)
-				.Where(line => !line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
-				.Select(line => line.Trim())
-				.Distinct(StringComparer.CurrentCultureIgnoreCase)
-				.OrderBy(line => line)
-				.ToList();
+            if (!File.Exists(filePath))
+            {
+                return new List<string>();
+            }
+
+            return File.ReadAllLines(filePath)
+                 .Where(line => !line.StartsWith("#") && !string.IsNullOrWhiteSpace(line))
+                 .Select(line => line.Trim())
+                 .Distinct(StringComparer.CurrentCultureIgnoreCase)
+                 .OrderBy(line => line)
+                 .ToList();
 		}
 	}
 }

@@ -6,13 +6,14 @@
 
 namespace PerfTap.Counter.Tests
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Threading;
-	using Xunit;
-	using Xunit.Extensions;
+    using PerfTap.Configuration;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading;
+    using Xunit;
+    using Xunit.Extensions;
 
 	/// <summary>
 	/// TODO: Update summary.
@@ -41,7 +42,7 @@ namespace PerfTap.Counter.Tests
 			var reader = new PerfmonCounterReader();
 			using (var cancellationTokenSource = new CancellationTokenSource())
 			{
-				Assert.Single(reader.GetCounterSamples(new[] { @"\processor(_total)\% processor time" }, TimeSpan.FromSeconds(1), 1, cancellationTokenSource.Token)
+                Assert.Single(reader.GetCounterSamples(new CounterNameConfigurationCollection(new[] { @"\processor(_total)\% processor time" }), TimeSpan.FromSeconds(1), 1, cancellationTokenSource.Token)
 					.SelectMany(set => set.CounterSamples));
 			}
 		}
@@ -54,7 +55,7 @@ namespace PerfTap.Counter.Tests
 			var reader = new PerfmonCounterReader();
 			using (var cancellationTokenSource = new CancellationTokenSource())
 			{
-				var sample = reader.GetCounterSamples(new[] { counter }, TimeSpan.FromSeconds(1), 1, cancellationTokenSource.Token)
+				var sample = reader.GetCounterSamples(new CounterNameConfigurationCollection(new[] { counter }), TimeSpan.FromSeconds(1), 1, cancellationTokenSource.Token)
 					.SelectMany(set => set.CounterSamples)
 					.First();
 

@@ -11,6 +11,7 @@ namespace PerfTap.Interop
 	using Microsoft.Win32;
 	using NLog;
 	using PerfTap.Counter;
+    using PerfTap.Configuration;
 
 	public class PdhHelper
 		: IDisposable
@@ -19,6 +20,7 @@ namespace PerfTap.Interop
 		{
 			public IntPtr CounterHandle { get; set; }
 			public string InstanceName { get; set; }
+            public string MetricSuffix { get; set; }
 		}
 
 		private struct RawCounterSample
@@ -39,16 +41,16 @@ namespace PerfTap.Interop
 		private readonly System.Timers.Timer _backgroundTimer = new System.Timers.Timer(1000);
 		private readonly ElapsedEventHandler _backgroundTask;
 
-		public PdhHelper(IEnumerable<string> counters)
-			: this(Environment.OSVersion.Version.Major < 6, new string[0], counters, true)
+        public PdhHelper(List<CounterName> counters)
+			: this(Environment.OSVersion.Version.Major < 6, counters, true)
 		{ }
 
-		public PdhHelper(IEnumerable<string> computerNames, IEnumerable<string> counters, bool ignoreBadStatusCodes)
-			: this(Environment.OSVersion.Version.Major < 6, computerNames, counters, ignoreBadStatusCodes)
+        public PdhHelper(List<CounterName> counters, bool ignoreBadStatusCodes)
+			: this(Environment.OSVersion.Version.Major < 6, counters, ignoreBadStatusCodes)
 		{ }
 
 		//TODO: keeping this *only* for testing purposes -- but not sure that even makes sense
-		internal PdhHelper(bool isPreVista, IEnumerable<string> computerNames, IEnumerable<string> counters, bool ignoreBadStatusCodes)
+        internal PdhHelper(bool isPreVista, List<CounterName> counters, bool ignoreBadStatusCodes)
 		{
 			this._isPreVista = isPreVista;
 			this._ignoreBadStatusCodes = ignoreBadStatusCodes;
@@ -56,12 +58,10 @@ namespace PerfTap.Interop
 			this._backgroundTimer.Elapsed += this._backgroundTask;
 			ConnectToDataSource();
 
-			List<string> validPaths = ParsePaths(counters.PrefixWithComputerNames(computerNames)).ToList();
-
-			if (validPaths.Count == 0)
-				throw new Exception(string.Format(CultureInfo.CurrentCulture, GetEventResources.CounterPathIsInvalid, new object[] { string.Empty }));
-
 			OpenQuery();
+
+            IEnumerable<CounterName> validPaths = ParsePaths(counters);
+
 			AddCounters(validPaths);
 			PerformFirstRead();
 		}
@@ -89,11 +89,11 @@ namespace PerfTap.Interop
 			//a sneaky way of not blocking until we actually call ReadNext
 			this._backgroundTimer.Start();
 		}
-		private IEnumerable<string> ParsePaths(IEnumerable<string> allCounterPaths)
+		private IEnumerable<CounterName> ParsePaths(IEnumerable<CounterName> allCounterPaths)
 		{
-			foreach (string counterPath in allCounterPaths)
+			foreach (CounterName counterPath in allCounterPaths)
 			{
-				var expandedPaths = ExpandWildCardPath(counterPath);
+				var expandedPaths = ExpandWildCardPath(counterPath.Name);
 				if (null == expandedPaths)
 				{
 					_log.Debug(() => string.Format("Could not expand path {0}", counterPath));
@@ -107,7 +107,7 @@ namespace PerfTap.Interop
 						throw new Exception(string.Format(CultureInfo.CurrentCulture, GetEventResources.CounterPathIsInvalid, new object[] { counterPath }));
 					}
 
-					yield return expandedPath;
+                    yield return new CounterName { Name = expandedPath, MetricSuffix = counterPath.MetricSuffix };
 				}
 			}
 		}
@@ -126,25 +126,32 @@ namespace PerfTap.Interop
 			}
 		}
 
-		private void AddCounters(IEnumerable<string> validPaths)
+        private void AddCounters(IEnumerable<CounterName> validPaths)
 		{
 			uint resultCode = (uint)PdhResults.PDH_CSTATUS_VALID_DATA;
-			foreach (string validPath in validPaths)
+			foreach (CounterName validPath in validPaths)
 			{				
 				IntPtr counterPointer;
-				resultCode = Apis.PdhAddCounter(this._safeQueryHandle, validPath, IntPtr.Zero, out counterPointer);
+				resultCode = Apis.PdhAddCounter(this._safeQueryHandle, validPath.Name, IntPtr.Zero, out counterPointer);
 				if (resultCode == PdhResults.PDH_CSTATUS_VALID_DATA)
 				{
-					CounterHandleNInstance instance = new CounterHandleNInstance() { CounterHandle = counterPointer, InstanceName = null };
-					PDH_COUNTER_PATH_ELEMENTS pCounterPathElements = PdhHelper.ParsePath(validPath);
+					CounterHandleNInstance instance = new CounterHandleNInstance() { 
+                        CounterHandle = counterPointer, 
+                        InstanceName = null,
+                        MetricSuffix = validPath.MetricSuffix
+                    };
+					PDH_COUNTER_PATH_ELEMENTS pCounterPathElements = PdhHelper.ParsePath(validPath.Name);
 
 					if (pCounterPathElements.InstanceName != null)
 					{
 						instance.InstanceName = pCounterPathElements.InstanceName.ToLower(CultureInfo.InvariantCulture);
 					}
-					if (!this._consumerPathToHandleAndInstanceMap.ContainsKey(validPath.ToLower(CultureInfo.InvariantCulture)))
+
+                    instance.MetricSuffix = validPath.MetricSuffix;
+
+					if (!this._consumerPathToHandleAndInstanceMap.ContainsKey(validPath.Name.ToLower(CultureInfo.InvariantCulture)))
 					{
-						this._consumerPathToHandleAndInstanceMap.Add(validPath.ToLower(CultureInfo.InvariantCulture), instance);
+						this._consumerPathToHandleAndInstanceMap.Add(validPath.Name.ToLower(CultureInfo.InvariantCulture), instance);
 					}
 				}
 			}
@@ -356,9 +363,9 @@ namespace PerfTap.Interop
 			{
 				IntPtr counterHandle = this._consumerPathToHandleAndInstanceMap[key].CounterHandle;
 				CounterInfo info = PdhHelper.GetCounterInfo(counterHandle);
-
+                
 				var sample = GetRawCounterSample(counterHandle, key, info, now);
-				var performanceSample = sample.PerformanceCounterSample ?? GetFormattedCounterSample(counterHandle, key, info, sample.RawCounter);
+                var performanceSample = sample.PerformanceCounterSample ?? GetFormattedCounterSample(counterHandle, key, this._consumerPathToHandleAndInstanceMap[key].MetricSuffix, info, sample.RawCounter);
 
 				if (!this._ignoreBadStatusCodes && (performanceSample.Status != 0))
 				{
@@ -399,7 +406,8 @@ namespace PerfTap.Interop
 					0.0, 0L, 0L, 0,
 						//TODO: original code just uses pdh_raw_counter.CStatus when _isPreVista
 						//TODO: not sure if its useful to stuff a bad returnCode in for status, as VerifySamples will throw when status isn't 0... not sure that's useful
-					PerformanceCounterType.RawBase, info.DefaultScale, info.TimeBase, timeStamp, (ulong)timeStamp.ToFileTime(), (rawCounter.CStatus == 0) ? returnCode : rawCounter.CStatus)
+					PerformanceCounterType.RawBase, info.DefaultScale, info.TimeBase, timeStamp, (ulong)timeStamp.ToFileTime(),
+                    (rawCounter.CStatus == 0) ? returnCode : rawCounter.CStatus, this._consumerPathToHandleAndInstanceMap[key].MetricSuffix)
 				};
 			}
 			else if (_isPreVista && (returnCode != PdhResults.PDH_CSTATUS_VALID_DATA))
@@ -411,7 +419,7 @@ namespace PerfTap.Interop
 			return new RawCounterSample() { RawCounter = rawCounter };
 		}
 
-		private PerformanceCounterSample GetFormattedCounterSample(IntPtr counterHandle, string name, CounterInfo info, PDH_RAW_COUNTER rawCounter)
+		private PerformanceCounterSample GetFormattedCounterSample(IntPtr counterHandle, string name, string suffix, CounterInfo info, PDH_RAW_COUNTER rawCounter)
 		{
 			IntPtr counterType = new IntPtr(0);
 			long fileTime = (((long)rawCounter.TimeStamp.dwHighDateTime) << 0x20) + rawCounter.TimeStamp.dwLowDateTime;
@@ -426,9 +434,10 @@ namespace PerfTap.Interop
 			{
 				return new PerformanceCounterSample(name, this._consumerPathToHandleAndInstanceMap[name].InstanceName,
 					0.0, (ulong)rawCounter.FirstValue, (ulong)rawCounter.SecondValue, rawCounter.MultiCount,
-					//TODO: not sure if its useful to stuff a bad returnCode in for status, as VerifySamples will throw when status isn't 0... not sure that's useful
+                    //TODO: not sure if its useful to stuff a bad returnCode in for status, as VerifySamples will throw when status isn't 0... not sure that's useful
 					//TODO: original code just uses pdh_raw_counter.CStatus when _isPreVista
-					(PerformanceCounterType)info.Type, info.DefaultScale, info.TimeBase, timeStamp2, (ulong)fileTime, (doubleFormattedCounter.CStatus == 0) ? returnCode : rawCounter.CStatus);
+					(PerformanceCounterType)info.Type, info.DefaultScale, info.TimeBase, timeStamp2, (ulong)fileTime, 
+                    (doubleFormattedCounter.CStatus == 0) ? returnCode : rawCounter.CStatus, suffix);
 			}
 			else if (_isPreVista && (returnCode != PdhResults.PDH_CSTATUS_VALID_DATA))
 			{
@@ -437,7 +446,7 @@ namespace PerfTap.Interop
 
 			return new PerformanceCounterSample(name, this._consumerPathToHandleAndInstanceMap[name].InstanceName,
 				doubleFormattedCounter.doubleValue, (ulong)rawCounter.FirstValue, (ulong)rawCounter.SecondValue, rawCounter.MultiCount,
-				(PerformanceCounterType)counterType.ToInt32(), info.DefaultScale, info.TimeBase, timeStamp2, (ulong)fileTime, doubleFormattedCounter.CStatus);
+                (PerformanceCounterType)counterType.ToInt32(), info.DefaultScale, info.TimeBase, timeStamp2, (ulong)fileTime, doubleFormattedCounter.CStatus, this._consumerPathToHandleAndInstanceMap[name].MetricSuffix);
 		}
 
 		private static string[] ParsePdhMultiStringBuffer(ref IntPtr nativeStringPointer, int strSize)

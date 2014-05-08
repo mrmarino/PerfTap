@@ -5,5 +5,6 @@ namespace PerfTap.Configuration
 	public interface ICounterName
 	{
 		string Name { get; }
+        string MetricSuffix { get; }
 	}
 }

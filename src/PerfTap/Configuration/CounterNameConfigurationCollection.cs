@@ -14,9 +14,14 @@ namespace PerfTap.Configuration
 
 		public CounterNameConfigurationCollection(IEnumerable<string> names)
 		{
-			foreach (var name in names)
+			foreach (string name in names)
 			{
-				this.BaseAdd(new CounterName() { Name = name });
+                var counter = name.Split('|');
+
+                this.BaseAdd(new CounterName() { 
+                    Name = counter[0],
+                    MetricSuffix = counter[1]
+                });
 			}			
 		}
 

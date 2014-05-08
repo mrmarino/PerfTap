@@ -29,6 +29,27 @@ namespace PerfTap.Configuration
 			set { this["sampleInterval"] = value; }
 		}
 
+        [ConfigurationProperty("metricHost", DefaultValue = "localhost", IsRequired = true)]
+        public string MetricHost
+        {
+            get { return (string)this["metricHost"]; }
+            set { this["metricHost"] = value; }
+        }
+
+        [ConfigurationProperty("metricHostPort", DefaultValue = "2003", IsRequired = true)]
+        public int MetricHostPort
+        {
+            get { return (int)this["metricHostPort"]; }
+            set { this["metricHostPort"] = value; }
+        }
+
+        [ConfigurationProperty("metricPrefix", DefaultValue = "perftap", IsRequired = true)]
+        public string MetricPrefix
+        {
+            get { return string.Format((string)this["metricPrefix"], Environment.MachineName); }
+            set { this["metricPrefix"] = value; }
+        }
+
 		[ConfigurationProperty("definitionFilePaths", IsDefaultCollection = true, IsRequired = false)]
 		[ConfigurationCollection(typeof(CounterDefinitionsFilePathConfigurationCollection), AddItemName = "definitionFile")]
 		public CounterDefinitionsFilePathConfigurationCollection DefinitionFilePaths
