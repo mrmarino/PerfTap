@@ -49,16 +49,20 @@ using System.Linq;
         {
             get
             {
-                string instance = (InstanceName ?? "").Replace(":", "").Replace(".", "_").Replace(" ", "_");
+                char[] arr = (InstanceName ?? "").Trim().ToCharArray();
+
+                string instance = new string(Array.FindAll<char>(arr, (c => c != ':' && c != '(' && c != ')' && c != '[' && c != ']' && c != '/')));
+
+                instance = instance.Replace('.', '_').Replace(' ', '_').Replace("__", "_");
 
                 return string.Format(MetricSuffix, instance);
             }
         }
 
-        public ulong MetricValue
+        public float MetricValue
         {
             get
-            { return Convert.ToUInt64(CookedValue); }
+            { return Convert.ToSingle(CookedValue); }
         }
 
         public bool IsFiltered(List<CounterFilter> filters) {
