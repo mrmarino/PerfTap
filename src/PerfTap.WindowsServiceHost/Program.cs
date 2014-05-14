@@ -37,8 +37,7 @@
 					Thread.Sleep(Timeout.Infinite);
 				}
 #else
-				ServiceBase.Run(new TaskService(cancellation => new MonitoringTaskFactory(CounterSamplingConfiguration.FromConfig(),
-				MetricPublishingConfiguration.FromConfig()).CreateContinuousTask(cancellation)));
+				ServiceBase.Run(new TaskService(cancellation => new MonitoringTaskFactory(CounterSamplingConfiguration.FromConfig()).CreateContinuousTask(cancellation)));
 #endif
 			}
 			catch (Exception ex)
