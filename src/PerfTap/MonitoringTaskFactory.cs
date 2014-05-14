@@ -22,7 +22,6 @@ namespace PerfTap
     {
         private readonly ICounterSamplingConfiguration _counterSamplingConfig;
         private readonly List<CounterName> _counterPaths;
-        private readonly CounterNameConfigurationCollection _counterDefinitions;
         private readonly List<CounterFilter> _counterFilters;
         /// <summary>
         /// Initializes a new instance of the MonitoringTaskFactory class.
