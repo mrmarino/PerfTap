@@ -1,0 +1,2 @@
+\VM Processor(_Total)\CPU stolen time|vmware.stolen_time
+\VM Processor(_Total)\% Processor Time|vmware.cpu_usage
