@@ -1,17 +1,36 @@
-\ASP.NET Apps v2.0.50727(*)\Anonymous Requests/Sec|asp.{0}.anonymous_requests_sec
-\ASP.NET Apps v2.0.50727(*)\requests failed|asp.{0}.requests_failed
-\ASP.NET Apps v2.0.50727(*)\requests executing|asp.{0}.requests_executing
-\ASP.NET Apps v2.0.50727(*)\requests/sec|asp.{0}.requests_sec
-\ASP.NET Apps v2.0.50727(*)\errors during execution|asp.{0}.errors_during_execution
-\ASP.NET Apps v2.0.50727(*)\errors unhandled during execution/sec|asp.{0}.errors_unhandled_execution_sec
-\ASP.NET Apps v2.0.50727(*)\errors total/sec|asp.{0}.errors_total_sec
-\ASP.NET Apps v2.0.50727(*)\pipeline instance count|asp.{0}.pipeline_instance_count
-\ASP.NET Apps v2.0.50727(*)\session sql server connections total|asp.{0}.session_sql_connections_total
+\ASP.NET\Requests Current|asp.v2.requests_current
+\ASP.NET Apps v2.0.50727(*)\Anonymous Requests/Sec|asp.v2.{0}.anonymous_requests_sec
+\ASP.NET Apps v2.0.50727(*)\requests/sec|asp.v2.{0}.requests_sec
+\ASP.NET Apps v2.0.50727(*)\errors during execution|asp.v2.{0}.errors_during_execution
+\ASP.NET Apps v2.0.50727(*)\errors unhandled during execution/sec|asp.v2.{0}.errors_unhandled_execution_sec
+\ASP.NET Apps v2.0.50727(*)\errors total/sec|asp.v2.{0}.errors_total_sec
+\ASP.NET Apps v2.0.50727(*)\pipeline instance count|asp.v2.{0}.pipeline_instance_count
+\ASP.NET Apps v2.0.50727(*)\session sql server connections total|asp.v2.{0}.session_sql_connections_total
+\ASP.NET Apps v2.0.50727(*)\Request Wait Time|asp.v2.request_wait_time
 
-\asp.net\applications running|asp.applications_running
-\asp.net\application restarts|asp.application_restarts
-\asp.net\requests current|asp.requests_current
-\asp.net\requests queued|asp.requests_queued
-\asp.net\requests rejected|asp.requests_rejected
-\asp.net\Worker Processes Running|asp.worker_running
-\asp.net\worker process restarts|asp.worker_restarts
+\ASP.NET Apps v4.0.30319(*)\Anonymous Requests/Sec|asp.v4.{0}.anonymous_requests_sec
+\ASP.NET Apps v4.0.30319(*)\requests failed|asp.v4.{0}.requests_failed
+\ASP.NET Apps v4.0.30319(*)\requests executing|asp.v4.{0}.requests_executing
+\ASP.NET Apps v4.0.30319(*)\requests/sec|asp.v4.{0}.requests_sec
+\ASP.NET Apps v4.0.30319(*)\errors during execution|asp.v4.{0}.errors_during_execution
+\ASP.NET Apps v4.0.30319(*)\errors unhandled during execution/sec|asp.v4.{0}.errors_unhandled_execution_sec
+\ASP.NET Apps v4.0.30319(*)\errors total/sec|asp.v4.{0}.errors_total_sec
+\ASP.NET Apps v4.0.30319(*)\pipeline instance count|asp.v4.{0}.pipeline_instance_count
+\ASP.NET Apps v4.0.30319(*)\session sql server connections total|asp.v4.{0}.session_sql_connections_total
+\ASP.NET Apps v4.0.30319(*)\Request Wait Time|asp.v4.request_wait_time
+
+\asp.net v2.0.50727\applications running|asp.v2.applications_running
+\asp.net v2.0.50727\application restarts|asp.v2.application_restarts
+\asp.net v2.0.50727\requests current|asp.v2.requests_current
+\asp.net v2.0.50727\requests queued|asp.v2.requests_queued
+\asp.net v2.0.50727\requests rejected|asp.v2.requests_rejected
+\asp.net v2.0.50727\Worker Processes Running|asp.v2.worker_running
+\asp.net v2.0.50727\worker process restarts|asp.v2.worker_restarts
+
+\asp.net v4.0.30319\applications running|asp.v4.applications_running
+\asp.net v4.0.30319\application restarts|asp.v4.application_restarts
+\asp.net v4.0.30319\requests current|asp.v4.requests_current
+\asp.net v4.0.30319\requests queued|asp.v4.requests_queued
+\asp.net v4.0.30319\requests rejected|asp.v4.requests_rejected
+\asp.net v4.0.30319\Worker Processes Running|asp.v4.worker_running
+\asp.net v4.0.30319\worker process restarts|asp.v4.worker_restarts

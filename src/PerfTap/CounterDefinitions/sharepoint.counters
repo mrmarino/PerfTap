@@ -1,0 +1,21 @@
+\Processor(_Total)\% Processor Time|cpu.proc_time
+
+\System\Processor Queue Length|system.queue_length
+\System\Context Switches/sec|system.context_switches_sec
+\System\Processes|system.process_count
+\System\System Up Time|system.uptime
+
+\Memory\Available Bytes|memory.available
+\Memory\Committed Bytes|memory.commited
+\Memory\Pages/sec|memory.pages_sec
+
+\PhysicalDisk(*)\Avg. Disk sec/Write|disk.{0}.avg_disk_sec_write
+\PhysicalDisk(*)\Avg. Disk sec/Read|disk.{0}.avg_disk_sec_read
+\PhysicalDisk(*)\Avg. Disk Bytes/Read|disk.{0}.avg_disk_bytes_read
+\PhysicalDisk(*)\Avg. Disk Bytes/Write|disk.{0}.avg_disk_bytes_write
+\PhysicalDisk(*)\Avg. Disk Queue Length|disk.{0}.avg_disk_queue_length
+
+\Network Interface(*)\Bytes Sent/sec|net.{0}.bytes_sent
+\Network Interface(*)\Bytes Received/sec|net.{0}.bytes_received
+
+\TCPv4\Connections Established|tcp.connections.established

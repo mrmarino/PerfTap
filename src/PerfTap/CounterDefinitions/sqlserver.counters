@@ -1,49 +1,3 @@
-##Additional Ref
-## http://blogs.technet.com/b/heyscriptingguy/archive/2011/07/25/use-powershell-to-monitor-your-sql-server-performance.aspx
-
-###############################################################################
-# OS Memory & Paging Counters
-###############################################################################
-
-# Unused physical memory (not page file)
-\Memory\Available MBytes
-
-#Reads from hard disk per second to resolve hard pages.
-\Memory\Pages Input/sec
-
-#Amount of Page File in use, which indicates the server is substituting disk 
-#space for memory.
-\Paging File(*)\% Usage
-
-#Highest %Usage metric since the last time the server was restarted.
-\Paging File(*)\% Usage Peak
-
-###############################################################################
-# OS CPU & Processor Counters
-###############################################################################
-# Percentage of elapsed time the processor spends executing non-idle threads
-#CPU: >70% is poor for OLTP, 50% w/HT, individual procs > 70% is also a concern. #Batch and DW have no limits
-#\Processor(_Total)\% Processor Time
-\Processor(*)\% Processor Time
-
-# Number of threads waiting for CPU cycles, where < 12 per CPU is good/fair, 
-#< 8 is better, < 4 is best
-\System\Processor Queue Length
-
-#Number of execution contexts switched in the last second, where >6000 is poor, 
-#<3000 is good, and <1500 is excellent.
-#Does it track with SQL Batch Requests/sec, network and IO?.
-\System\Context Switches/sec
-
-#Percentage of processor time spent on SQL Server process threads.You may also 
-#wish to investigate other Process (sqlservr) such as Private Bytes, Virtual 
-#Bytes, Working Set, etc to get a fuller understanding of how SQL Server allocates 
-#certain segments of memory. Usually, these auxiliary counters provide contextual 
-#information and are not necessary for troubleshooting. 
-#if sqlserver is greater than 80% of the total time, something is up
-\Process(sqlservr)\% Processor Time
-\Process(msmdsrv)\% Processor Time
-
 ###############################################################################
 # Data Access Performance Counters
 ###############################################################################
@@ -79,58 +33,18 @@
 #Numbers higher than 0 indicate a lack of memory
 \SQLServer:Memory Manager\Memory Grants Pending
 
-###############################################################################
-# OS Disk & Misc
-###############################################################################
-
-#A key measure of disk latency representing the average time, in milliseconds, 
-#of each write to disk, where non-cached writes ( > 20 poor, <20 fair, 
-#<12 better,  <8 best) differ significantly from cached writes (> 4 poor, 
-#<4 fair, <2 better, <1 best ). For OLTP databases, the lower this number the 
-#better, especially for disks holding the transaction log.
-#\PhysicalDisk(_Total)\Avg. Disk sec/Write
-#transaction log disks should be <5ms
-#data log disks should be <20ms
-#** BEST METRIC for quality is latency
-\PhysicalDisk(*)\Avg. Disk sec/Write
-
-#A key measure of disk latency representing the average time, in milliseconds, 
-#of each read to disk where > 20 is poor, <20 is good/fair, <12 is better, <8 is best
-#** BEST METRIC for quality is latency
-#\PhysicalDisk(_Total)\Avg. Disk sec/Read
-\PhysicalDisk(*)\Avg. Disk sec/Read
-
-#The number of bytes sent and received over a specific network adapter, including
-# framing characters. Be sure to record the throughput of your SQL Server’s NIC 
-#card(s).  Watch for this value possibly exceeding the NIC’s specifications, 
-#especially when conducting large and/or multiple backups or copies to network drives.  
-#A high-speed network and/or a NIC dedicated to admin processes often alleviates this 
-#bottleneck. This counter is a sum of “Network Interface\\Bytes Received/sec” and 
-#“Network Interface\\Bytes Sent/sec”.  In some situations, you may wish to determine 
-#both inbound and outbound network traffic separately
-\Network Interface(*)\Bytes Total/sec
 
 ###############################################################################
 # User Database Performance Counters
 ###############################################################################
 
-#Cumulative size (KB) of all the data files in the database including any 
-#automatic growth.  Monitoring this counter is useful, for example, for determining 
-#the correct size of tempdb.
 \SQLServer:Databases(*)\Data File(s) Size (KB)
-
-#Cumulative size, in (KB), of all the transaction log files for the specific 
-#database. Useful for determining trends and utilization of the transaction log.
 \SQLServer:Databases(*)\Log File(s) Size (KB)
 
 #Total number of log bytes flushed per second. Useful for determining trends and
 #utilization of the transaction log
 \SQLServer:Databases(*)\Log Bytes Flushed/sec
 
-#Percentage of space in the log that is in use.  Since all work in an OLTP 
-#database stops until writes can occur to the transaction log, it’s a very good 
-#idea to ensure that the log never fills completely.  Hence, the recommendation 
-#to keep the log under 80% full.
 \SQLServer:Databases(*)\Percent Log Used
 
 #Effectively, the number of times per second that SQL Server must wait for pages 
